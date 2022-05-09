@@ -112,6 +112,9 @@ int main()
 	return 1;
 }
 
+/** 이원 탐색 트리 정의
+ * head 노드는 변경 가능하게 이중 포인터로 받음
+ */
 int initializeBST(Node** h) {
 
 	/* if the tree is not empty, then remove all allocated nodes from the tree*/
@@ -126,9 +129,10 @@ int initializeBST(Node** h) {
 	return 1;
 }
 
+/* recursive inorder 순회 */
 void inorderTraversal(Node* ptr)
 {
-	/* LVR 순서로 프린트 */
+	/* 순환 방식을 이용하여 LVR 순서로 프린트 */
 	if (ptr) {
 		inorderTraversal(ptr->left);
 		printf(" [%d] ", ptr->key);
@@ -136,9 +140,10 @@ void inorderTraversal(Node* ptr)
 	}
 }
 
+/* recursive preorder 순회 */
 void preorderTraversal(Node* ptr)
 {
-	/* VLR 순서로 프린트 */
+	/* 순환 방식을 이용하여 VLR 순서로 프린트 */
 	if (ptr) {
 		printf(" [%d] ", ptr->key);
 		preorderTraversal(ptr->left);
@@ -146,9 +151,10 @@ void preorderTraversal(Node* ptr)
 	}
 }
 
+/* recursive postorder 순회 */
 void postorderTraversal(Node* ptr)
 {
-	/* LRV 순서로 프린트 */
+	/* 순환 방식을 이용하여 LRV 순서로 프린트 */
 	if (ptr) {
 		postorderTraversal(ptr->left);
 		postorderTraversal(ptr->right);
@@ -156,7 +162,7 @@ void postorderTraversal(Node* ptr)
 	}
 }
 
-
+/* key를 입력받아 노드 삽입 */
 int insert(Node* head, int key)
 {
 	Node* node = (Node*)malloc(sizeof(Node));
@@ -174,7 +180,7 @@ int insert(Node* head, int key)
 			parentNode = findNode;
 			/** 어느 쪽 필드로 향할지 방향 선택
 			 * 삽입되는 노드의 key가 더 작다면 왼쪽으로, 더 크다면 오른쪽으로 향함
-			*/
+			 */
 			if (findNode->key > key)
 				findNode = findNode->left;
 			else if (findNode->key < key)
@@ -195,6 +201,9 @@ int insert(Node* head, int key)
 	return 0;
 }
 
+/** key를 입력받아 노드 삭제
+ * 리프 노드에 해당하는 경우에만 삭제한다.
+ */
 int deleteLeafNode(Node* head, int key)
 {
 	/* 트리가 정의되지 않았거나 비어 있어서 삭제하지 못하는 경우 */
@@ -242,6 +251,7 @@ int deleteLeafNode(Node* head, int key)
 	return 0;
 }
 
+/* key를 입력받아 recursive 방식으로 탐색 */
 Node* searchRecursive(Node* ptr, int key)
 {
 	/* 찾지 못한 경우 NULL 리턴 */
@@ -255,6 +265,7 @@ Node* searchRecursive(Node* ptr, int key)
 	return searchRecursive(ptr->right, key);
 }
 
+/* key를 입력받아 iterative 방식으로 탐색 */
 Node* searchIterative(Node* head, int key)
 {
 	Node* ptr = head->left;
@@ -274,7 +285,7 @@ Node* searchIterative(Node* head, int key)
 /** solution 참고 **/
 void freeNode(Node* ptr)
 {
-	/* postorder 방식으로 free */
+	/* recursive 방식으로 free */
 	if (ptr != NULL) {
 		freeNode(ptr->left);
 		freeNode(ptr->right);
@@ -282,6 +293,7 @@ void freeNode(Node* ptr)
 	}
 }
 
+/* 이원 탐색 트리에 동적 할당된 메모리 해제 */
 int freeBST(Node* head)
 {
 	/* 트리에 head 노드밖에 없는 경우 */
@@ -290,7 +302,7 @@ int freeBST(Node* head)
 		return 0;
 	}
 	Node* ptr = head->left;
-	/* 순환 방식으로 할당 해제하는 함수 호출 */
+	/* recursive 방식으로 할당 해제하는 함수 호출 */
 	freeNode(ptr);
 	/* head 노드까지 해제 */
 	free(head);
