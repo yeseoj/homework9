@@ -27,6 +27,7 @@ int insert(Node* head, int key);  /* insert a node to the tree */
 int deleteLeafNode(Node* head, int key);  /* delete the leaf node for the key */
 Node* searchRecursive(Node* ptr, int key);  /* search the node for the key */
 Node* searchIterative(Node* head, int key);  /* search the node for the key */
+void freeNode(Node* ptr); /* free all memories allocated to the tree */
 int freeBST(Node* head); /* free all memories allocated to the tree */
 
 /* you may add your own defined functions if necessary */
@@ -125,10 +126,9 @@ int initializeBST(Node** h) {
 	return 1;
 }
 
-
-
 void inorderTraversal(Node* ptr)
 {
+	/* LVR 순서로 프린트 */
 	if (ptr) {
 		inorderTraversal(ptr->left);
 		printf(" [%d] ", ptr->key);
@@ -138,6 +138,7 @@ void inorderTraversal(Node* ptr)
 
 void preorderTraversal(Node* ptr)
 {
+	/* VLR 순서로 프린트 */
 	if (ptr) {
 		printf(" [%d] ", ptr->key);
 		preorderTraversal(ptr->left);
@@ -147,6 +148,7 @@ void preorderTraversal(Node* ptr)
 
 void postorderTraversal(Node* ptr)
 {
+	/* LRV 순서로 프린트 */
 	if (ptr) {
 		postorderTraversal(ptr->left);
 		postorderTraversal(ptr->right);
@@ -242,9 +244,12 @@ int deleteLeafNode(Node* head, int key)
 
 Node* searchRecursive(Node* ptr, int key)
 {
-	/* 찾지 못한 경우 */
+	/* 찾지 못한 경우 NULL 리턴 */
 	if (!ptr) return NULL;
+	/* 찾은 경우 해당 노드 주소 리턴 */
 	if (key == ptr->key) return ptr;
+	/** 해당 노드의 key값이 더 작다면 ptr->left로 함수 재호출
+	 * 더 크다면 ptr->right로 함수 재호출 */
 	if (key < ptr->key)
 		return searchRecursive(ptr->left, key);
 	return searchRecursive(ptr->right, key);
@@ -252,30 +257,45 @@ Node* searchRecursive(Node* ptr, int key)
 
 Node* searchIterative(Node* head, int key)
 {
-	Node* temp = head->left;
-	while (temp) {
-		if (key == temp->key) return temp;
-		if (key < temp->key)
-			temp = temp->left;
+	Node* ptr = head->left;
+	while (ptr != NULL) {
+		/* 찾은 경우 해당 노드 주소 리턴 */
+		if (key == ptr->key) return ptr;
+		/* 해당 노드의 key값이 더 작다면 left 필드로, 더 크다면 right 필드로 이동 */
+		if (key < ptr->key)
+			ptr = ptr->left;
 		else
-			temp = temp->right;
+			ptr = ptr->right;
 	}
-	
-	/* 찾지 못한 경우 */
+	/* 찾지 못한 경우 NULL 리턴 */
 	return NULL;
 }
 
+/** solution 참고 **/
+void freeNode(Node* ptr)
+{
+	/* postorder 방식으로 free */
+	if (ptr != NULL) {
+		freeNode(ptr->left);
+		freeNode(ptr->right);
+		free(ptr);
+	}
+}
 
 int freeBST(Node* head)
 {
-	Node* ptr = head->left;
-	Node* parentNode = head;
-	while (ptr != NULL) {
-		parentNode = ptr;
-		ptr = ptr->left;	/* 해당하는 노드를 찾지 못한 경우 */
-
-		free(parentNode);
+	/* 트리에 head 노드밖에 없는 경우 */
+	if (head->left == NULL) {
+		free(head);
+		return 0;
 	}
+	Node* ptr = head->left;
+	/* 순환 방식으로 할당 해제하는 함수 호출 */
+	freeNode(ptr);
+	/* head 노드까지 해제 */
+	free(head);
+
+	return 0;
 }
 
 
